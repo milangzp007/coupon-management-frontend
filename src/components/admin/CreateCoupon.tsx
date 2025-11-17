@@ -40,6 +40,22 @@ export function CreateCoupon() {
     if (formData.startDate && formData.endDate) {
       const startDate = new Date(formData.startDate);
       const endDate = new Date(formData.endDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+      
+      // Check if start date is in the past
+      if (startDate < today) {
+        setError('Start date must be today or a future date');
+        setLoading(false);
+        return;
+      }
+      
+      // Check if end date is in the past
+      if (endDate < today) {
+        setError('End date must be today or a future date');
+        setLoading(false);
+        return;
+      }
       
       if (startDate >= endDate) {
         setError('Start date must be before end date');
@@ -296,9 +312,11 @@ export function CreateCoupon() {
                 required
                 value={formData.startDate}
                 onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                min={new Date().toISOString().split('T')[0]}
                 max={formData.endDate || undefined}
                 className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
+              <p className="text-xs text-slate-400 mt-1">Must be today or a future date</p>
             </div>
 
             <div>
@@ -310,9 +328,10 @@ export function CreateCoupon() {
                 required
                 value={formData.endDate}
                 onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                min={formData.startDate || undefined}
+                min={formData.startDate || new Date().toISOString().split('T')[0]}
                 className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
+              <p className="text-xs text-slate-400 mt-1">Must be today or a future date, and after start date</p>
             </div>
           </div>
 

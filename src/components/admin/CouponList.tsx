@@ -117,6 +117,22 @@ export function CouponList() {
       if (startDateStr && endDateStr) {
         const startDate = new Date(startDateStr);
         const endDate = new Date(endDateStr);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+        
+        // Check if start date is in the past
+        if (startDate < today) {
+          setEditError('Start date must be today or a future date');
+          setEditLoading(false);
+          return;
+        }
+        
+        // Check if end date is in the past
+        if (endDate < today) {
+          setEditError('End date must be today or a future date');
+          setEditLoading(false);
+          return;
+        }
         
         if (startDate >= endDate) {
           setEditError('Start date must be before end date');
@@ -811,9 +827,11 @@ export function CouponList() {
                     required
                     value={editStartDate}
                     onChange={(e) => setEditStartDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
                     max={editEndDate || undefined}
                     className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
+                  <p className="text-xs text-slate-400 mt-1">Must be today or a future date</p>
                 </div>
 
                 <div>
@@ -826,9 +844,10 @@ export function CouponList() {
                     required
                     value={editEndDate}
                     onChange={(e) => setEditEndDate(e.target.value)}
-                    min={editStartDate || undefined}
+                    min={editStartDate || new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
+                  <p className="text-xs text-slate-400 mt-1">Must be today or a future date, and after start date</p>
                 </div>
               </div>
 
